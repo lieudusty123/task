@@ -2,9 +2,7 @@ const express = require("express");
 const app = express();
 const serverPort = 4000;
 
-// const { Task } = require("./entity/Task");
 import { Description, Task } from "./entity/Task";
-const { User } = require("./entity/User");
 import { AppDataSource } from "./data-source";
 import * as cors from "cors";
 import { Request, Response } from "express";
@@ -13,7 +11,6 @@ import { ObjectId } from "mongodb";
 AppDataSource.initialize()
   .then(async () => {
     console.log("Data initialized");
-    // AppDataSource.getMongoRepository(Task).deleteMany({});
     AppDataSource.getMongoRepository(Task).find({});
   })
   .catch((error) => console.log(error));
@@ -24,20 +21,6 @@ app.get("/getAllTasks", async (req: Request, res: Response) => {
   const data = await AppDataSource.getMongoRepository(Task).find();
   res.status(200).send(data);
 });
-
-app.post("/users", async (req: Request, res: Response) => {
-  try {
-    const user = new User();
-    user.firstName = req.body.name;
-    user.lastName = req.body.email;
-
-    await AppDataSource.manager.save(user);
-    res.status(201).json(user);
-  } catch (error) {
-    res.status(500).json({ error: "An error occurred" });
-  }
-});
-
 app.post("/newTask", async (req: Request, res: Response) => {
   const task = new Task();
   task.date = new Date();
@@ -66,6 +49,6 @@ app.post("/addTaskDesc", async (req: Request, res: Response) => {
   const taskRepository = AppDataSource.getMongoRepository(Task);
   const task = await taskRepository.findOneAndUpdate({ _id: new ObjectId(taskID) }, { $push: { description: newDesc } });
 
-  res.status(200).send("maybe");
+  res.status(200).send("");
 });
 app.listen(serverPort, () => console.log("server running"));
