@@ -3,7 +3,7 @@ import { Entity, ObjectIdColumn, ObjectId, Column } from "typeorm";
 @Entity()
 export class Task {
   @ObjectIdColumn()
-  id: ObjectId;
+  _id: ObjectId;
 
   @Column()
   description: Description[];
@@ -16,6 +16,9 @@ export class Task {
 }
 
 export class Description {
+  @ObjectIdColumn()
+  _id: ObjectId;
+
   @Column()
   descVal: string;
 

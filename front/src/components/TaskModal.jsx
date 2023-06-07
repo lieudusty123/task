@@ -1,30 +1,48 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 
 export default function TaskModal(props) {
   const [mappedItems, setMappedItems] = useState([]);
   const [descInput, setDescInput] = useState("");
-  async function removeDesc(date) {
-    console.log(props.task.id);
-    axios.delete("http://localhost:4000/removeTaskDesc", { date: date, taskID: props.task.id });
-    let filtered = [...props.task.description].filter((desc) => desc.date !== date);
-
-    let newMapped = filtered.map((desc) => (
-      <div id={desc.date} key={desc.date}>
-        {desc.descVal}
-        <span onClick={(e) => removeDesc(desc.date)}>🗑️</span>
-      </div>
-    ));
-    setMappedItems(newMapped);
+  async function removeDesc(descID) {
+    // sending the description values we want to remove alongside the Bearer token to the server.
+    // if everything goes well recall the new data
+    axios
+      .post(
+        "http://localhost:4000/removeTaskDesc",
+        { taskID: props.task._id, descID: descID },
+        { headers: { Authorization: `Bearer ${Cookies.get("auth")}` } }
+      )
+      .then(() => {
+        props.callAPI();
+        props.setDisplayModal(false);
+      })
+      .catch((err) => console.log(err));
   }
   async function addDesc() {
-    axios.post("http://localhost:4000/addTaskDesc", { descInput, taskID: props.task.id });
+    // sending new description inputs alongside the Bearer token to the server.
+    // if everything goes well recall the new data
+    axios
+      .post(
+        "http://localhost:4000/addTaskDesc",
+        { descInput, taskID: props.task._id },
+        {
+          headers: { Authorization: `Bearer ${Cookies.get("auth")}` },
+        }
+      )
+      .then(() => {
+        props.callAPI();
+        props.setDisplayModal(false);
+      })
+      .catch((err) => console.log(err));
   }
   useEffect(() => {
+    //loops through the description array props and map them to elements
     let tempArr = props.task.description.map((desc) => (
-      <div id={desc.date} key={desc.date}>
+      <div id={desc._id} key={desc.date}>
         {desc.descVal}
-        <span onClick={(e) => removeDesc(desc.date)}>🗑️</span>
+        <span onClick={() => removeDesc(desc._id)}>🗑️</span>
       </div>
     ));
     setMappedItems(tempArr);
@@ -38,15 +56,17 @@ export default function TaskModal(props) {
         top: "35%",
         left: "35%",
         margin: "auto",
+        padding: "1.5rem",
         width: "30vw",
         height: "30vh",
+        overflow: "auto",
       }}
     >
       <button onClick={() => props.setDisplayModal(false)}>X</button>
       <input type="text" placeholder="addDesc" onChange={(e) => setDescInput(e.target.value)} />
       <button onClick={() => addDesc()}>+</button>
       <div>{props.task.descVal}</div>
-      {mappedItems}
+      <div>{mappedItems}</div>
     </div>
   );
 }

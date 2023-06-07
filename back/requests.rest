@@ -1,0 +1,12 @@
+GET http://localhost:4000/getAllTasks
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoibHN0ZWNoIiwicGFzc3dvcmQiOiJMU3RlY2gxMjMiLCJpYXQiOjE2ODYxMTQzNDAsImV4cCI6MTY4NjEyMTU0MH0.J2xj8_pYfBhFg3EONTczr_M9CVp_S_8jiM5frOzc10g
+
+###
+
+POST http://localhost:4000/login
+Content-Type: application/json
+
+{
+    "username": "lstech",
+    "password":"LStech123"
+}
